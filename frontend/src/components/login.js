@@ -1,49 +1,57 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Username:', username)
-    console.log('Password:', password)
-    if (username === 'user' && password === 'pass') {  
-      navigate('/dashboard');
-    } else {
-      console.log('Username:', username)
-      console.log('Password:', password)
-      alert('Invalid credentials');
+    console.log('Username:', username);
+    console.log('Password:', password);
+
+    try {
+      const response = await axios.post('/api/login', { username, password });
+      console.log('Login response:', response.data);
+
+      if (response.data.success) {
+        navigate('/dashboard');
+      } else {
+        alert('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('An error occurred during login. Please try again.');
     }
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="container">
+      <h1 className="mt-5">Login</h1>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:
+        <div className="form-group">
+          <label>Username:</label>
           <input
-            id="username"
             type="text"
+            className="form-control"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-          /></label>
+          />
         </div>
-        <div>
-          <label>Password:
+        <div className="form-group">
+          <label>Password:</label>
           <input
-            id="password"
             type="password"
+            className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-          /></label>
+          />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" className="btn btn-primary mt-3">Login</button>
       </form>
     </div>
   );
